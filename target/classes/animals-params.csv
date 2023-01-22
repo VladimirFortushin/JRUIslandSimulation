@@ -1,0 +1,17 @@
+Entity,weight,maxQuantityPerCell,maxDistance,saturationKgs,species
+wolf,50,30,3,8,predator
+boa,15,30,1,3,predator
+fox,8,30,2,2,predator
+bear,500,5,2,80,predator
+eagle,6,20,3,1,predator
+horse,400,20,4,60,herbivores
+deer,300,20,4,50,herbivores
+rabbit,2,150,2,"0.45",herbivores
+mouse,0.05,500,1,0.01,herbivores
+goat,60,140,3,10,herbivores
+sheep,70,140,3,15,herbivores
+boar,400,50,2,50,herbivores
+buffalo,700,10,3,100,herbivores
+duck,1,200,4,"0.15",herbivores
+caterpillar,"0.01",1000,0,0,herbivores
+plant,1,200,0,0,plant
