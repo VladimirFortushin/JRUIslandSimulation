@@ -10,9 +10,6 @@ public abstract class Animal {
     private int maxMoveCells;
     private double kgsForSaturation;
     private final Random random = new Random();
-    private int locationX;
-    private int locationY;
-
     private String sex;
 
     public void setName(String name) {
@@ -26,7 +23,6 @@ public abstract class Animal {
     public void setMaxQuantityPerCell(int maxQuantityPerCell) {
         this.maxQuantityPerCell = maxQuantityPerCell;
     }
-
     public void setWeight(double weight) {
         this.weight = weight;
     }
@@ -69,22 +65,6 @@ public abstract class Animal {
 
     public double getKgsForSaturation() {
         return kgsForSaturation;
-    }
-
-    public int getLocationX() {
-        return locationX;
-    }
-
-    public void setLocationX(int locationX) {
-        this.locationX = locationX;
-    }
-
-    public int getLocationY() {
-        return locationY;
-    }
-
-    public void setLocationY(int locationY) {
-        this.locationY = locationY;
     }
 
     @Override

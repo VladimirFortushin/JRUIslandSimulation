@@ -1,7 +1,7 @@
 package ru.fortushin.islandsimulation.models;
 
 import ru.fortushin.islandsimulation.datareader.DataReader;
-import ru.fortushin.islandsimulation.entities.Herbivores;
+import ru.fortushin.islandsimulation.entities.Herbivorous;
 import ru.fortushin.islandsimulation.entities.Predator;
 
 import java.nio.file.Path;
@@ -17,17 +17,17 @@ public class AnimalFabric extends Animal {
 
     public Map<Animal, Integer> getAnimalsForCell() throws Exception {
         Map<Animal, Integer> animalsPerCell = new HashMap<>();
-        List<Animal> animal = enrichAnimals(new AnimalFabric());
-        animal.forEach(a -> animalsPerCell.put(a, r.nextInt(a.getMaxQuantityPerCell())));
+        List<Animal> animals = enrichAnimalSpecies(new AnimalFabric());
+        animals.forEach(a -> animalsPerCell.put(a, r.nextInt(a.getMaxQuantityPerCell())));
         return animalsPerCell;
     }
 
-    private List<Animal> enrichAnimals(Animal animal) {
+    private List<Animal> enrichAnimalSpecies(Animal animal) {
         List<Animal> listOfAnimalsPerCell = new ArrayList<>();
         for (String[] row : animalStatsList) {
             if(row[0].equals("Entity")){continue;}
             if(row[5].equals("predator")){animal = new Predator();}
-            if(row[5].equals("herbivores")){animal = new Herbivores();}
+            if(row[5].equals("herbivorous")){animal = new Herbivorous();}
             if(row[5].equals("plant")){continue;}
             animal.setName(row[0]);
             animal.setSpecies(row[5]);

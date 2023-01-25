@@ -1,24 +1,24 @@
 package ru.fortushin.islandsimulation.action;
 
+import ru.fortushin.islandsimulation.entities.Herbivorous;
+import ru.fortushin.islandsimulation.entities.Predator;
 import ru.fortushin.islandsimulation.models.Animal;
 import ru.fortushin.islandsimulation.models.Cell;
-import ru.fortushin.islandsimulation.models.Island;
 
+import java.util.Arrays;
 import java.util.Random;
 
-public class Move extends Action {
-    private int x;
-    private int y;
-    private Random r = new Random();
-    private final Island island = new Island();
-    private final Cell[][] cells = island.getIsland();
-
-    public void setCurrentCoordinates(int x, int y) {
-        this.x = x;
-        this.y = y;
+public class Move  {
+    private static int x;
+    private static int y;
+    private static Random r = new Random();
+    private static Cell[][] cells;
+    public static void setIslandData(Cell[][] cells, int x, int y){
+        Move.cells = cells;
+        Move.x = x;
+        Move.y = y;
     }
-
-    public void replaceAnimalToAnotherCell(Animal animal){
+    public static void replaceAnimalToAnotherCell(Animal animal, Action action){
         switch (r.nextInt(4)){
             case 0 -> moveUp(animal);
             case 1 -> moveDown(animal);
@@ -27,41 +27,36 @@ public class Move extends Action {
         }
     }
 
-    private void moveRight(Animal animal) {
+    private static void moveRight(Animal animal) {
         int movePoints = r.nextInt(animal.getMaxMoveCells() + 1);
-        animal.setLocationX(x + movePoints);
-        placeOnCell(animal);
-
+        int locX = x + movePoints;
+        placeOnCell(animal, locX, y);
     }
 
-    private void moveLeft(Animal animal) {
+    private static void moveLeft(Animal animal) {
         int movePoints = r.nextInt(animal.getMaxMoveCells() + 1);
-        animal.setLocationX(x - movePoints);
-        placeOnCell(animal);
+        int locX = x - movePoints;
+        placeOnCell(animal, locX, y);
     }
 
-    private void moveUp(Animal animal) {
+    private static void moveUp(Animal animal) {
         int movePoints = r.nextInt(animal.getMaxMoveCells() + 1);
-        animal.setLocationX(y - movePoints);
-        placeOnCell(animal);
+        int locY = y + movePoints;
+        placeOnCell(animal, x, locY);
     }
 
-    private void moveDown(Animal animal) {
+    private static void moveDown(Animal animal) {
         int movePoints = r.nextInt(animal.getMaxMoveCells() + 1);
-        animal.setLocationX(y + movePoints);
-        placeOnCell(animal);
+        int locY = y - movePoints;
+        placeOnCell(animal, x, locY);
     }
 
-    private void placeOnCell(Animal animal) {
+    private static void placeOnCell(Animal animal, int newX, int newY) {
         try {
-            for (int i = 0; i < cells.length; i++) {
-                for (int j = 0; j < cells[0].length; j++) {
-                    if (animal.getLocationX() == i && animal.getLocationY() == j) {
-                        cells[i][j].addNewComer(animal);
-                    }
-                }
-            }
+                cells[newX][newY].getNewComers().add(animal);
+
         } catch (IndexOutOfBoundsException e) {
+
             switch (r.nextInt(4)) {
                 case 0 -> moveUp(animal);
                 case 1 -> moveDown(animal);
@@ -69,8 +64,5 @@ public class Move extends Action {
                 case 3 -> moveRight(animal);
             }
         }
-
     }
-
-
 }

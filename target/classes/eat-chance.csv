@@ -1,4 +1,4 @@
-"",wolf,boa,fox,bear,eagle,horse,deer,rabbit,mouse,goat,sheep,boar,buffalo,duck,caterpillar,plant
+animal,wolf,boa,fox,bear,eagle,horse,deer,rabbit,mouse,goat,sheep,boar,buffalo,duck,caterpillar,plant
 wolf,-,0,0,0,0,10,15,60,80,60,70,15,10,40,0,0
 boa,0,-,15,0,0,0,0,20,40,0,0,0,0,10,0,0
 fox,0,0,-,0,0,0,0,70,90,0,0,0,0,60,40,0

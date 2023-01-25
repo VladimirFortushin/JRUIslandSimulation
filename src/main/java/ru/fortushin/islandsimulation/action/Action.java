@@ -1,153 +1,227 @@
 package ru.fortushin.islandsimulation.action;
 
 import ru.fortushin.islandsimulation.datareader.DataReader;
-import ru.fortushin.islandsimulation.models.Animal;
-import ru.fortushin.islandsimulation.entities.Herbivores;
+import ru.fortushin.islandsimulation.entities.Herbivorous;
 import ru.fortushin.islandsimulation.entities.Plant;
 import ru.fortushin.islandsimulation.entities.Predator;
+import ru.fortushin.islandsimulation.models.Animal;
 import ru.fortushin.islandsimulation.models.Cell;
-import ru.fortushin.islandsimulation.models.Island;
 
 import java.nio.file.Path;
 import java.util.*;
 
-public class Action extends Thread {
-    private int x;
-    private int y;
-    private final Path chanceToEatCsv = Path.of("src/main/resources/eat-chance.csv");
+public class Action {
+    private static final Path chanceToEatCsv = Path.of("src/main/resources/eat-chance.csv");
     private final Random r = new Random();
-    private final List<Animal> newAnimalsList = new ArrayList<>();
-    private final List<Plant> newPlantsList = new ArrayList<>();
+    private Map<Predator, Integer> newPredatorsMap = new HashMap<>();
+    private Map<Herbivorous, Integer> newHerbivoresMap = new HashMap<>();
+    private Map<Predator, Integer> newComersPredators = new HashMap<>();
+    private Map<Herbivorous, Integer> newComersHerbivores = new HashMap<>();
+    private final List<Animal> wishToMoveAnimals = new ArrayList<>();
+    private List<Plant> newPlantsList = new ArrayList<>();
+    private Cell cell;
+    private String info;
 
-    public void doTurn(List<Animal> allAnimalsOnCell, List<Plant> plants) throws Exception {
-        List<Animal> animalsWishToStay = new ArrayList<>();
-        List<Animal> animalsWishToMove = new ArrayList<>();
+    public String doTurn(Map<Predator, Integer> predators, Map<Herbivorous, Integer> herbivorous, List<Plant> plants, Cell cell) throws Exception {
+        this.cell = cell;
+        String preTurnData = "Pre turn data: " + (Counter.count(predators) + Counter.count(herbivorous))
+                + " animals, " + plants.size() + " plants.\n";
 
-        for (Animal animal : allAnimalsOnCell){
-                switch (r.nextInt(2)){
-                    case 0 -> animalsWishToStay.add(animal);
-                    case 1 -> animalsWishToMove.add(animal);
+        newPredatorsMap = predators;
+        newHerbivoresMap = herbivorous;
+        newPlantsList = plants;
+
+        String cellInfo = "------- Cell: " + cell.getX() + ":" + cell.getY() + " --------\n";
+        String movedAnimals = (filterWhoWishToMove(newPredatorsMap) + filterWhoWishToMove(newHerbivoresMap))
+                + " have left this part of the island.\n";
+        String newComers = cell.getNewComers().size() + " animals are new comers for this cell.\n";
+
+        info = eat();
+        String newBornAnimals = (multiply(newPredatorsMap) + multiply(newHerbivoresMap))
+                + " animals were born on this cell.\n";
+
+        info = cellInfo + newComers + preTurnData + movedAnimals + info + newBornAnimals + multiplyPlants();
+
+        updateCell();
+        return info;
+
+    }
+
+    public void settleNewComer(Animal animal, int newX, int newY){
+        if(cell.getX() == newX && cell.getY() == newY){
+            if(animal instanceof Predator){
+                for(var predator : newPredatorsMap.entrySet()){
+                    if (predator.getKey().getName().equals(animal.getName())){
+                        newPredatorsMap.put((Predator) animal, predator.getValue() + 1);
+                    }
                 }
+            }
+            if(animal instanceof Herbivorous){
+                for(var herbivorous : newHerbivoresMap.entrySet()){
+                    if (herbivorous.getKey().getName().equals(animal.getName())){
+                        newHerbivoresMap.put((Herbivorous) animal, herbivorous.getValue() + 1);
+                    }
+                }
+            }
+        }
+    }
+
+    public void updateCell() {
+        cell.setPredators(newPredatorsMap);
+        cell.setHerbivores(newHerbivoresMap);
+        cell.setPlants(newPlantsList);
+    }
+
+    public String eat() throws Exception {
+        int diedPredators = 0;
+        int diedHerbivores = 0;
+        int eatenPlants = 0;
+
+        if (newPlantsList.size() > newHerbivoresMap.size()) {
+            int eatenPlantsAmount = newPlantsList.size() - newHerbivoresMap.size();
+            for (int i = 0; i < eatenPlantsAmount; i++) {
+                newPlantsList.remove(0);
+                eatenPlants++;
+            }
+        } else if (newPlantsList.size() < newHerbivoresMap.size()) {
+            int diedHerbivorousAmount = newHerbivoresMap.size() - newPlantsList.size();
+
+            for (int i = 0; i < diedHerbivorousAmount; i++) {
+                for (var victim : newHerbivoresMap.entrySet()) {
+                    newHerbivoresMap.put(victim.getKey(), victim.getValue() - 1);
+                    diedHerbivores++;
+                    break;
+                }
+            }
+        } else {
+            eatenPlants = newPlantsList.size();
+            newPlantsList.clear();
         }
 
-        List<Animal> survivors = eat(animalsWishToStay, plants);
-        List<Animal> newBorn = multiply(survivors);
-        move(animalsWishToMove);
+        List<String[]> chancesToEat = DataReader.readAllLines(chanceToEatCsv);
+        String[] victims = chancesToEat.get(0);
 
-        newAnimalsList.addAll(survivors);
-        newAnimalsList.addAll(newBorn);
+        for (var predator : newPredatorsMap.entrySet()) {
+            for (int i = 0; i < predator.getValue(); i++) {
+                int huntingAttempts = 0;
+                double saturationLevel = 0.0;
+                for (String[] chance : chancesToEat) {
+                    if (chance[0].equals(predator.getKey().getName())) {
+                        for (int j = 1; j < chance.length; j++) {
+                            try {
+                                int chanceToEat = Integer.parseInt(chance[j]);
+                                if (chanceToEat == 0) {
+                                    continue;
+                                }
+                                huntingAttempts++;
+                                if (huntingAttempts > 3) {
+                                    if (saturationLevel == 0) {
+                                        newPredatorsMap.put(predator.getKey(), predator.getValue() - 1);
+                                        diedPredators++;
+                                    }
+                                    break;
+                                }
+                                int randomChance = r.nextInt(100) + 1;
+
+                                if (randomChance <= chanceToEat) {
+                                    String eaten = victims[j];
+                                    for (var victim : newHerbivoresMap.entrySet()) {
+                                        if (victim.getKey().getName().equals(eaten)) {
+                                            newHerbivoresMap.put(victim.getKey(), victim.getValue() - 1);
+                                            diedHerbivores++;
+                                            saturationLevel += victim.getKey().getWeight();
+                                            break;
+                                        }
+                                    }
+                                }
+                            } catch (NumberFormatException ignored) {
+                            }
+                        }
+
+                    }
+                }
+                if (saturationLevel < predator.getKey().getKgsForSaturation()) {
+                    newPredatorsMap.put(predator.getKey(), predator.getValue() - 1);
+                }
+            }
+        }
+        return "Predators and Herbivorous have made their cycle of saturation.\n"
+                + "Predators died from starvation: "
+                + diedPredators + "\n"
+                + "Herbivorous been eaten or died from starvation: "
+                + diedHerbivores + "\n"
+                + "Plants that were eaten: "
+                + eatenPlants + "\n"
+                + "Survived Predators and Herbivorous are fed and ready to multiply" + "\n";
 
 
     }
 
-    public List<Animal> eat(List<Animal> animalsWishToEat, List<Plant> plants) throws Exception {
-        List<Animal> survivors = new ArrayList<>();
-        List<String[]> chancesToEat = DataReader.readAllLines(chanceToEatCsv);
-        String[] topRow = chancesToEat.get(0);
-        List<Predator> hungryPredators = new ArrayList<>();
-        List<Herbivores> hungryHerbivorous = new ArrayList<>();
-        for(Animal animal : animalsWishToEat){
-            if(animal instanceof Predator){hungryPredators.add((Predator) animal);}
-            if(animal instanceof Herbivores){hungryHerbivorous.add((Herbivores) animal);}
-        }
-        for(Predator predator : hungryPredators){
-            for(String[] chance : chancesToEat){
-                if(chance[0].equals(predator.getName())){
-                    for (int i = 1; i < chance.length; i++) {
-                        try{
-                            int chanceToEat = Integer.parseInt(chance[i]);
-                            if(chanceToEat == 0){continue;}
-                            int result = r.nextInt(100) + 1;
-                            if(result <= chanceToEat){
-                                Herbivores victim = new Herbivores();
-                                for(Herbivores herbivores : hungryHerbivorous){
-                                    if(herbivores.getName().equals(topRow[i])){
-                                        victim = herbivores;
-                                        break;
-                                    }
-                                }
-                                survivors.add(predator);
-                                hungryHerbivorous.remove(victim);
-                            }
-                        }catch (NumberFormatException e){
-                            continue;
+    public int multiply(Map<? extends Animal, Integer> animals) {
+        int newBorn = 0;
+        int females = 0;
+
+        for (var animal : animals.entrySet()) {
+            for (int i = 0; i < animal.getValue(); i++) {
+                if (animal.getKey().getSex().equals("F")) {
+                    females++;
+                }
+            }
+            for (int i = 0; i < females; i++) {
+                if (animal.getKey() instanceof Predator) {
+                    switch (r.nextInt(2)) {
+                        case 1 -> {
+                            animal.getKey().setSex();
+                            newPredatorsMap.put((Predator) animal.getKey(), animal.getValue() + 1);
+                            newBorn++;
+                        }
+                    }
+                }
+                if (animal.getKey() instanceof Herbivorous) {
+                    switch (r.nextInt(2)) {
+                        case 1 -> {
+                            animal.getKey().setSex();
+                            newHerbivoresMap.put((Herbivorous) animal.getKey(), animal.getValue() + 1);
+                            newBorn++;
                         }
                     }
                 }
             }
         }
-
-        for (Herbivores herbivorous : hungryHerbivorous) {
-            if (plants.size() == 0) {
-                break;
-            }
-
-            plants.remove(0);
-            survivors.add(herbivorous);
-
-        }
-        newPlantsList.addAll(plants);
-        return survivors;
-    }
-
-    public List<Animal> multiply(List<Animal> animalsToMultiply) {
-        List<Animal> newBorn = new ArrayList<>();
-        for(Animal animal1 : animalsToMultiply){
-            for (Animal animal2 : animalsToMultiply){
-                if(animal1.getSpecies().equals(animal2.getSpecies())
-                        && animal1.getSex().equals("M") && animal2.getSex().equals("F")){
-                    for (int i = 0; i < r.nextInt(3); i++) {
-                        newBorn.add(r.nextBoolean() ? animal1 : animal2);
-                    }
-                    animal2.setSpecies("alreadyMultiplied");
-                    break;
-                }
-
-            }
-        }
-        if(newPlantsList.size() < 200){
-            for (int i = 0; i < newPlantsList.size(); i++) {
-                newPlantsList.add(new Plant());
-                if(newAnimalsList.size() == 200){break;}
-            }
-        }
         return newBorn;
     }
-    public void move(List<Animal> animalsWishToMove) {
-        Move move = new Move();
-        animalsWishToMove.forEach(move::replaceAnimalToAnotherCell);
+
+
+
+
+
+    private String multiplyPlants() {
+        int newPlantsQuantity = 0;
+        for (int i = 0; i < r.nextInt(200 - newPlantsList.size() + 1); i++) {
+            newPlantsList.add(new Plant());
+            newPlantsQuantity++;
+        }
+        return "New plants: " + newPlantsQuantity + "\n";
     }
 
-
-    public void transferCoordinates(int x, int y) {
-        this.x = x;
-        this.y = y;
-        Move move = new Move();
-        move.setCurrentCoordinates(x, y);
-    }
-
-
-    public void getEndTurnData() throws Exception {
-        List<String[]> chancesToEat = DataReader.readAllLines(chanceToEatCsv);
-        String[] topRow = chancesToEat.get(0);
-        Map<Predator, Integer> predators = new HashMap<>();
-        Map<Herbivores, Integer> herbivorous = new HashMap<>();
+    private int filterWhoWishToMove(Map<? extends Animal, Integer> animals) {
         int counter = 0;
+        for (var animal : animals.entrySet()) {
 
-        for(Animal animal : newAnimalsList){
-            for (int i = 1; i < topRow.length; i++) {
-                if(animal.getName().equals(topRow[i])){
-                    if(animal instanceof Predator){
-                        counter++;
+            for (int i = 0; i < animal.getValue(); i++) {
+                if (r.nextBoolean()) {
+                    counter++;
+                    if (animal.getKey() instanceof Predator) {
+                        newPredatorsMap.put((Predator) animal.getKey(), animal.getValue() - 1);
+                        Move.replaceAnimalToAnotherCell(animal.getKey(), this);
+                    }
+                    if (animal.getKey() instanceof Herbivorous) {
+                        newHerbivoresMap.put((Herbivorous) animal.getKey(), animal.getValue() - 1);
+                        Move.replaceAnimalToAnotherCell(animal.getKey(), this);
                     }
                 }
-
             }
-
         }
-        Island island = new Island();
-        Cell[][] cells = island.getIsland();
-        cells[x][y].setPredators();
-
+        return counter;
     }
 }
