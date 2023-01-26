@@ -13,7 +13,7 @@ public class CellFabric extends Cell {
     private final Map<Animal, Integer> allAnimalsForCell = fabric.getAnimalsForCell();
     private final Map<Predator, Integer> predatorsForCell = new HashMap<>();
     private final Map<Herbivorous, Integer> herbivorousForCell = new HashMap<>();
-    private final List<Plant> plantForCell = new ArrayList<>();
+    private final List<Plant> plantsForCell = new ArrayList<>();
 
 
     public CellFabric(int x, int y) throws Exception {
@@ -27,10 +27,11 @@ public class CellFabric extends Cell {
         }
         cell.setPredators(predatorsForCell);
         cell.setHerbivores(herbivorousForCell);
-        for (int i = 0; i < r.nextInt(200); i++) {
-            plantForCell.add(new Plant());
+        int plantsCountForCell = r.nextInt(200) + 1;
+        for (int i = 0; i < plantsCountForCell; i++) {
+            plantsForCell.add(new Plant());
         }
-        cell.setPlants(plantForCell);
+        cell.setPlants(plantsForCell);
         Action.cells.add(cell);
     }
 }

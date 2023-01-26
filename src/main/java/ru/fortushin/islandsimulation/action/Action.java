@@ -25,22 +25,29 @@ public class Action {
             Settler.settleNewComersOn(cells, cell);
         }
 
-        String preTurnData = "Pre turn data: " + (Counter.count(predators) + Counter.count(herbivorous))
-                + " animals, " + plants.size() + " plants.\n";
+        String preTurnData = "Pre turn data: " + Counter.countFromMap(predators)
+                + " predators, " + Counter.countFromMap(herbivorous) + " herbivores, "
+                + plants.size() + " plants.\n";
 
         newPredatorsMap = predators;
         newHerbivoresMap = herbivorous;
         newPlantsList = plants;
 
         String cellInfo = "------- Cell: " + cell.getX() + ":" + cell.getY() + " --------\n";
-        String movedAnimals = (filterWhoWishToMove(newPredatorsMap) + filterWhoWishToMove(newHerbivoresMap))
-                + " have left this part of the island.\n";
-        String newComers = cell.getNewComers().size() + " animals are new comers for this cell.\n";
+        String movedAnimals = filterWhoWishToMove(newPredatorsMap) + " predators, "
+                + filterWhoWishToMove(newHerbivoresMap) + " herbivores have left this part of the island.\n";
+        String newComers = Counter.countFromList(cell.getNewComers()) + " are new comers for this cell.\n";
 
         String info = eat();
-        String newBornAnimals = "New born animals on this cell: " + (multiply(newPredatorsMap) + multiply(newHerbivoresMap)) + "\n";
+        String newBornAnimals = "New born animals on this cell: " + multiply(newPredatorsMap) + " predators, "
+                + multiply(newHerbivoresMap) + " herbivores\n";
 
-        info = cellInfo + newComers + preTurnData + movedAnimals + info + newBornAnimals + multiplyPlants();
+        String postTurnData = "Post turn data: " + Counter.countFromMap(newPredatorsMap)
+                + " predators, " + Counter.countFromMap(newHerbivoresMap) + " herbivores, "
+                + newPlantsList.size() + " plants.\n";
+
+        info = cellInfo + newComers + preTurnData + movedAnimals
+                + info + newBornAnimals + multiplyPlants() + postTurnData;
 
         updateCell();
         return info;
