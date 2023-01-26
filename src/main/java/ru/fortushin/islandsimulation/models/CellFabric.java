@@ -13,9 +13,8 @@ public class CellFabric extends Cell {
     private final Map<Animal, Integer> allAnimalsForCell = fabric.getAnimalsForCell();
     private final Map<Predator, Integer> predatorsForCell = new HashMap<>();
     private final Map<Herbivorous, Integer> herbivorousForCell = new HashMap<>();
-    private final Action action = new Action();
     private final List<Plant> plantForCell = new ArrayList<>();
-    private List<Cell> cells = new ArrayList<>();
+
 
     public CellFabric(int x, int y) throws Exception {
         super(x, y);
@@ -32,6 +31,6 @@ public class CellFabric extends Cell {
             plantForCell.add(new Plant());
         }
         cell.setPlants(plantForCell);
-        cells.add(cell);
+        Action.cells.add(cell);
     }
 }

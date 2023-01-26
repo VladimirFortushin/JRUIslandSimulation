@@ -31,7 +31,6 @@ public class AnimalFabric extends Animal {
             if(row[5].equals("plant")){continue;}
             animal.setName(row[0]);
             animal.setSpecies(row[5]);
-            animal.setSex();
             animal.setWeight(Double.parseDouble(row[1]));
             animal.setMaxQuantityPerCell(Integer.parseInt(row[2]));
             animal.setMaxMoveCells(Integer.parseInt(row[3]));

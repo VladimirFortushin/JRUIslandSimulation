@@ -9,9 +9,6 @@ public abstract class Animal {
     private double weight;
     private int maxMoveCells;
     private double kgsForSaturation;
-    private final Random random = new Random();
-    private String sex;
-
     public void setName(String name) {
         this.name = name;
     }
@@ -33,14 +30,6 @@ public abstract class Animal {
 
     public void setKgsForSaturation(double kgsForSaturation) {
         this.kgsForSaturation = kgsForSaturation;
-    }
-
-    public String getSex() {
-        return this.sex;
-    }
-
-    public void setSex() {
-        this.sex = random.nextBoolean() ? "F" : "M";
     }
 
     public String getName() {
@@ -72,7 +61,6 @@ public abstract class Animal {
         return "Animal{" +
                 "name='" + name + '\'' +
                 ", species='" + species + '\'' +
-                ", sex='" + sex + '\'' +
                 '}';
     }
 }

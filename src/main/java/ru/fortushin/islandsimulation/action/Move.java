@@ -1,11 +1,8 @@
 package ru.fortushin.islandsimulation.action;
 
-import ru.fortushin.islandsimulation.entities.Herbivorous;
-import ru.fortushin.islandsimulation.entities.Predator;
 import ru.fortushin.islandsimulation.models.Animal;
 import ru.fortushin.islandsimulation.models.Cell;
 
-import java.util.Arrays;
 import java.util.Random;
 
 public class Move  {
@@ -18,7 +15,7 @@ public class Move  {
         Move.x = x;
         Move.y = y;
     }
-    public static void replaceAnimalToAnotherCell(Animal animal, Action action){
+    public static void replaceAnimalToAnotherCell(Animal animal){
         switch (r.nextInt(4)){
             case 0 -> moveUp(animal);
             case 1 -> moveDown(animal);
@@ -53,16 +50,19 @@ public class Move  {
 
     private static void placeOnCell(Animal animal, int newX, int newY) {
         try {
-                cells[newX][newY].getNewComers().add(animal);
+
+            for (int i = 0; i < x; i++) {
+                for (int j = 0; j < y; j++) {
+                    if(cells[i][j].getX() == newX && cells[i][j].getY() == newY){
+                        cells[i][j].getNewComers().add(animal);
+                    }
+                }
+
+            }
+            cells[newX][newY].getNewComers().add(animal);
 
         } catch (IndexOutOfBoundsException e) {
-
-            switch (r.nextInt(4)) {
-                case 0 -> moveUp(animal);
-                case 1 -> moveDown(animal);
-                case 2 -> moveLeft(animal);
-                case 3 -> moveRight(animal);
-            }
+            replaceAnimalToAnotherCell(animal);
         }
     }
 }
