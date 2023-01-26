@@ -12,16 +12,18 @@ import java.util.*;
 
 public class Action {
     private static final Path chanceToEatCsv = Path.of("src/main/resources/eat-chance.csv");
+    public static List<Cell> cells = new ArrayList<>();
     private final Random r = new Random();
     private Map<Predator, Integer> newPredatorsMap = new HashMap<>();
     private Map<Herbivorous, Integer> newHerbivoresMap = new HashMap<>();
     private List<Plant> newPlantsList = new ArrayList<>();
-    public static List<Cell> cells = new ArrayList<>();
     private Cell cell;
 
     public String doTurn(Map<Predator, Integer> predators, Map<Herbivorous, Integer> herbivorous, List<Plant> plants, Cell cell) throws Exception {
         this.cell = cell;
-        if(cell.getNewComers().size() != 0){Settler.settleNewComersOn(cells, cell);}
+        if (cell.getNewComers().size() != 0) {
+            Settler.settleNewComersOn(cells, cell);
+        }
 
         String preTurnData = "Pre turn data: " + (Counter.count(predators) + Counter.count(herbivorous))
                 + " animals, " + plants.size() + " plants.\n";
@@ -59,24 +61,24 @@ public class Action {
         double herbivorousSaturationLevel = 0.0;
 
 
-        for(var herbivorous : newHerbivoresMap.entrySet()){
+        for (var herbivorous : newHerbivoresMap.entrySet()) {
             for (int i = 0; i < herbivorous.getValue(); i++) {
-                if(newPlantsList.size() != 0){
+                if (newPlantsList.size() != 0) {
                     for (int j = 0; j < newPlantsList.size(); j++) {
                         double plantWeight = 1.0;
-                        if(herbivorousSaturationLevel >= herbivorous.getKey().getKgsForSaturation()){
+                        if (herbivorousSaturationLevel >= herbivorous.getKey().getKgsForSaturation()) {
                             break;
                         }
-                        if(newPlantsList.size() > 0){
+                        if (newPlantsList.size() > 0) {
                             plantWeight -= herbivorous.getKey().getKgsForSaturation();
-                            if(plantWeight <= 0.0){
+                            if (plantWeight <= 0.0) {
                                 newPlantsList.remove(0);
                                 eatenPlants++;
                             }
                             herbivorousSaturationLevel++;
                         }
                     }
-                }else{
+                } else {
                     newHerbivoresMap.put(herbivorous.getKey(), herbivorous.getValue() - 1);
                     diedHerbivores++;
                 }
@@ -92,10 +94,14 @@ public class Action {
                 int huntingAttempts = 0;
                 double saturationLevel = 0.0;
                 for (String[] chance : chancesToEat) {
-                    if (huntingAttempts > 1){break;}
+                    if (huntingAttempts > 1) {
+                        break;
+                    }
                     if (chance[0].equals(predator.getKey().getName())) {
                         for (int j = 1; j < chance.length; j++) {
-                            if (huntingAttempts > 1){break;}
+                            if (huntingAttempts > 1) {
+                                break;
+                            }
                             try {
                                 int chanceToEat = Integer.parseInt(chance[j]);
                                 if (chanceToEat == 0) {
@@ -149,38 +155,34 @@ public class Action {
             int males = 0;
             int actsOfMultiply = 0;
             for (int i = 0; i < animal.getValue(); i++) {
-                if(r.nextBoolean()){
+                if (r.nextBoolean()) {
                     males++;
-                }else {
+                } else {
                     females++;
                 }
             }
 
-            if(males > females){
+            if (males > females) {
                 actsOfMultiply = females;
             }
-            if(males < females){
+            if (males < females) {
                 actsOfMultiply = males;
             }
-            if(males == females){
+            if (males == females) {
                 actsOfMultiply = males;
             }
 
             for (int i = 0; i < actsOfMultiply; i++) {
                 if (animal.getKey() instanceof Predator) {
-                    switch (r.nextInt(2)) {
-                        case 1 -> {
-                            newPredatorsMap.put((Predator) animal.getKey(), animal.getValue() + 1);
-                            newBorn++;
-                        }
+                    if (r.nextInt(2) == 1) {
+                        newPredatorsMap.put((Predator) animal.getKey(), animal.getValue() + 1);
+                        newBorn++;
                     }
                 }
                 if (animal.getKey() instanceof Herbivorous) {
-                    switch (r.nextInt(2)) {
-                        case 1 -> {
-                            newHerbivoresMap.put((Herbivorous) animal.getKey(), animal.getValue() + 1);
-                            newBorn++;
-                        }
+                    if (r.nextInt(2) == 1) {
+                        newHerbivoresMap.put((Herbivorous) animal.getKey(), animal.getValue() + 1);
+                        newBorn++;
                     }
                 }
             }
@@ -190,10 +192,9 @@ public class Action {
 
 
     private String multiplyPlants() {
-        int newPlantsQuantity = 0;
-        for (int i = 0; i < r.nextInt(200 - newPlantsList.size() + 1); i++) {
+        int newPlantsQuantity = r.nextInt(200 - newPlantsList.size() + 1);
+        for (int i = 0; i < newPlantsQuantity; i++) {
             newPlantsList.add(new Plant());
-            newPlantsQuantity++;
         }
         return "New plants: " + newPlantsQuantity + "\n";
     }
