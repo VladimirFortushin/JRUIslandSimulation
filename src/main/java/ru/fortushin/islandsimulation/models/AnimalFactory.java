@@ -7,17 +7,17 @@ import ru.fortushin.islandsimulation.entities.Predator;
 import java.nio.file.Path;
 import java.util.*;
 
-public class AnimalFabric extends Animal {
+public class AnimalFactory extends Animal {
     private final Random r = new Random();
     private final Path animalsParamsCsv = Path.of("src/main/resources/animals-params.csv");
     private final List<String[]> animalStatsList = DataReader.readAllLines(animalsParamsCsv);
 
-    public AnimalFabric() throws Exception {
+    public AnimalFactory() throws Exception {
     }
 
     public Map<Animal, Integer> getAnimalsForCell() throws Exception {
         Map<Animal, Integer> animalsPerCell = new HashMap<>();
-        List<Animal> animals = enrichAnimalSpecies(new AnimalFabric());
+        List<Animal> animals = enrichAnimalSpecies(new AnimalFactory());
         animals.forEach(a -> animalsPerCell.put(a, r.nextInt(a.getMaxQuantityPerCell())));
         return animalsPerCell;
     }

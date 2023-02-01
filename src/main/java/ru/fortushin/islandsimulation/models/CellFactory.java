@@ -1,22 +1,22 @@
 package ru.fortushin.islandsimulation.models;
 
-import ru.fortushin.islandsimulation.action.Action;
 import ru.fortushin.islandsimulation.entities.Herbivorous;
 import ru.fortushin.islandsimulation.entities.Plant;
 import ru.fortushin.islandsimulation.entities.Predator;
 
 import java.util.*;
 
-public class CellFabric extends Cell {
+public class CellFactory extends Cell {
     private final Random r = new Random();
-    private final AnimalFabric fabric = new AnimalFabric();
+    private final AnimalFactory fabric = new AnimalFactory();
     private final Map<Animal, Integer> allAnimalsForCell = fabric.getAnimalsForCell();
     private final Map<Predator, Integer> predatorsForCell = new HashMap<>();
     private final Map<Herbivorous, Integer> herbivorousForCell = new HashMap<>();
     private final List<Plant> plantsForCell = new ArrayList<>();
 
 
-    public CellFabric(int x, int y) throws Exception {
+
+    public CellFactory(int x, int y) throws Exception {
         super(x, y);
     }
 
@@ -32,6 +32,5 @@ public class CellFabric extends Cell {
             plantsForCell.add(new Plant());
         }
         cell.setPlants(plantsForCell);
-        Action.cells.add(cell);
     }
 }

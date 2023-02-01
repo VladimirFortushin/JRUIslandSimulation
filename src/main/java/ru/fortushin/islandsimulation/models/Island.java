@@ -24,9 +24,9 @@ public class Island {
         for (int i = 0; i < x; i++) {
             for (int j = 0; j < y; j++) {
                 island[i][j] = new Cell(i, j);
-                CellFabric cellFabric = new CellFabric(i, j);
-                cellFabric.settleEntitiesOnCell(island[i][j]);
-                Move.setIslandData(island, i, j);
+                CellFactory cellFactory = new CellFactory(i, j);
+                cellFactory.settleEntitiesOnCell(island[i][j]);
+
             }
         }
 
@@ -44,11 +44,8 @@ public class Island {
 
         for (int i = 0; i < x; i++) {
             for (int j = 0; j < y; j++) {
-
-                System.out.println(action.doTurn(island[i][j].getPredators(),
-                        island[i][j].getHerbivores(),
-                        island[i][j].getPlants(),
-                        island[i][j]));
+                Move.setCurrentCoordinates(i, j, island);
+                System.out.println(action.doTurnAndReturnData(island[i][j]));
             }
         }
 

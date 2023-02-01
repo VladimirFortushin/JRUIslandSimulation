@@ -1,9 +1,7 @@
 package ru.fortushin.islandsimulation.action;
 
-import ru.fortushin.islandsimulation.entities.Predator;
 import ru.fortushin.islandsimulation.models.Animal;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -21,7 +19,8 @@ public class Counter {
         int herbivoresCounter = 0;
 
         for(Animal animal : listToCount){
-            int i = animal instanceof Predator ? predatorsCounter++ : herbivoresCounter++;
+            if(animal.getSpecies().equals("predator")){predatorsCounter++;}
+            else if(animal.getSpecies().equals("herbivorous")){herbivoresCounter++;}
         }
         return predatorsCounter + " predators, " + herbivoresCounter + " herbivores";
     }
