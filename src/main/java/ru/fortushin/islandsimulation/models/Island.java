@@ -30,7 +30,7 @@ public class Island {
             }
         }
 
-        while (true){
+        while (true) {
             sc.nextLine();
             makeTurn();
         }
@@ -48,7 +48,6 @@ public class Island {
                 System.out.println(action.doTurnAndReturnData(island[i][j]));
             }
         }
-
 
 
     }

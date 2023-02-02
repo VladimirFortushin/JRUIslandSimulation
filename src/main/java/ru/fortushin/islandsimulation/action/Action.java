@@ -129,14 +129,14 @@ public class Action {
                 }
             }
 
-        return "Predators and Herbivorous have made their cycle of saturation.\n"
+        return "Predators and Herbivores have made their cycle of saturation.\n"
                 + "Predators died from starvation: "
                 + diedPredators + "\n"
-                + "Herbivorous been eaten or died from starvation: "
+                + "Herbivores been eaten or died from starvation: "
                 + diedHerbivores + "\n"
                 + "Plants that were eaten: "
                 + eatenPlants + "\n"
-                + "Survived Predators and Herbivorous are fed and ready to multiply" + "\n";
+                + "Survived Predators and Herbivores are fed and ready to multiply" + "\n";
 
 
     }
