@@ -103,9 +103,10 @@ public class Action {
 
                                 if (chanceToEat == 0) {continue;}
 
-                                String targetedHerbivorous = victims[j];
+                                String target = victims[j];
 
-                                int currentSpeciesQuantity = MapHandler.countQuantityForHerbivorousSpecies(targetedHerbivorous, cell);
+                                int currentSpeciesQuantity = MapHandler.countQuantityForHerbivorousSpecies(target, cell)
+                                        + MapHandler.countQuantityForPredatorSpecies(target, cell);
 
                                 if(currentSpeciesQuantity == 0){continue;}
 
@@ -113,10 +114,10 @@ public class Action {
                                 int randomChance = r.nextInt(100) + 1;
 
                                 if (randomChance <= chanceToEat) {
-                                    MapHandler.removeHerbivorousByName(targetedHerbivorous, cell);
+                                    MapHandler.removeHerbivorousByName(target, cell);
                                     diedHerbivores++;
-                                    predatorSaturationLevel += MapHandler.getHerbivorousWeight(targetedHerbivorous, cell);
-                                    break;
+                                    predatorSaturationLevel += MapHandler.getHerbivorousWeight(target, cell);
+
                                 }
                               }
                         }
