@@ -30,12 +30,12 @@ public class MapHandler {
                 .filter(predator -> predator.getKey().getName().equals(name))
                 .mapToInt(Map.Entry::getValue).sum();
     }
-    public static int getHerbivorousWeight(String name, Cell cell) {
+    public static double getHerbivorousWeight(String name, Cell cell) {
         return cell.getHerbivores().keySet().stream()
                 .filter(herbivorous -> herbivorous.getName().equals(name))
-                .mapToInt(herbivorous -> (int) herbivorous.getWeight()).sum();
+                .mapToDouble(Animal::getWeight).sum();
     }
-    public static void removeHerbivorous(String name, Cell cell) {
+    public static void removeHerbivorousByName(String name, Cell cell) {
         int currentSpeciesQuantity = countQuantityForHerbivorousSpecies(name, cell);
         Herbivorous herbivorousToRemove = new Herbivorous();
         herbivorousToRemove.setName(name);

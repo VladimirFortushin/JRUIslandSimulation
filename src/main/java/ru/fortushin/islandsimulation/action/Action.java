@@ -55,6 +55,7 @@ public class Action {
         int diedPredators = 0;
         int diedHerbivores = 0;
         int eatenPlants = 0;
+        double plantWeight = 1.0;
 
         for (var herbivorous : cell.getHerbivores().entrySet()) {
             for (int i = 0; i < herbivorous.getValue(); i++) {
@@ -62,25 +63,22 @@ public class Action {
                 if (cell.getPlants().size() != 0) {
                     for (int j = 0; j < cell.getPlants().size(); j++) {
 
-                            double plantWeight = 1.0;
-                            if (herbivorousSaturationLevel >= herbivorous.getKey().getKgsForSaturation()) {
-                                break;
-                            }
-                            if (cell.getPlants().size() > 0) {
-                                plantWeight -= herbivorous.getKey().getKgsForSaturation();
-                                if (plantWeight <= 0.0) {
-                                    cell.getPlants().remove(0);
-                                    eatenPlants++;
-                                }
-                                herbivorousSaturationLevel++;
-                            }
+                        if (herbivorousSaturationLevel >= herbivorous.getKey().getKgsForSaturation()) {
+                            break;
+                        }
+
+                        plantWeight -= herbivorous.getKey().getKgsForSaturation();
+                        if (plantWeight <= 0.0) {
+                            cell.getPlants().remove(0);
+                            eatenPlants++;
+                            plantWeight = 1.0;
+                        }
+                        herbivorousSaturationLevel++;
 
                     }
                 } else {
-                    if(herbivorous.getValue() > 0){
                         cell.getHerbivores().put(herbivorous.getKey(), herbivorous.getValue() - 1);
                         diedHerbivores++;
-                    }
                 }
             }
         }
@@ -105,9 +103,9 @@ public class Action {
 
                                 if (chanceToEat == 0) {continue;}
 
-                                String targetName = victims[j];
+                                String targetedHerbivorous = victims[j];
 
-                                int currentSpeciesQuantity = MapHandler.countQuantityForHerbivorousSpecies(targetName, cell);
+                                int currentSpeciesQuantity = MapHandler.countQuantityForHerbivorousSpecies(targetedHerbivorous, cell);
 
                                 if(currentSpeciesQuantity == 0){continue;}
 
@@ -115,9 +113,9 @@ public class Action {
                                 int randomChance = r.nextInt(100) + 1;
 
                                 if (randomChance <= chanceToEat) {
-                                    MapHandler.removeHerbivorous(targetName, cell);
+                                    MapHandler.removeHerbivorousByName(targetedHerbivorous, cell);
                                     diedHerbivores++;
-                                    predatorSaturationLevel += MapHandler.getHerbivorousWeight(targetName, cell);
+                                    predatorSaturationLevel += MapHandler.getHerbivorousWeight(targetedHerbivorous, cell);
                                     break;
                                 }
                               }
