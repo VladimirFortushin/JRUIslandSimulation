@@ -6,6 +6,9 @@ import ru.fortushin.islandsimulation.entities.Plant;
 import ru.fortushin.islandsimulation.entities.Predator;
 import ru.fortushin.islandsimulation.models.Animal;
 import ru.fortushin.islandsimulation.models.Cell;
+import ru.fortushin.islandsimulation.utils.Counter;
+import ru.fortushin.islandsimulation.utils.MapHandler;
+import ru.fortushin.islandsimulation.utils.Mover;
 
 import java.nio.file.Path;
 import java.util.*;
@@ -193,11 +196,11 @@ public class Action {
                     counter++;
                     if (animal.getKey() instanceof Predator) {
                         cell.getPredators().put((Predator) animal.getKey(), animal.getValue() - 1);
-                        Move.replaceAnimalToAnotherCell(animal.getKey());
+                        Mover.replaceAnimalToAnotherCell(animal.getKey());
                     }
                     if (animal.getKey() instanceof Herbivorous) {
                         cell.getHerbivores().put((Herbivorous) animal.getKey(), animal.getValue() - 1);
-                        Move.replaceAnimalToAnotherCell(animal.getKey());
+                        Mover.replaceAnimalToAnotherCell(animal.getKey());
                     }
                 }
             }

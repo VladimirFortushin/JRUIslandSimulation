@@ -11,7 +11,7 @@ public class Cell {
     private final int y;
     private Map<Predator, Integer> predators = new HashMap<>();
     private Map<Herbivorous, Integer> herbivores = new HashMap<>();
-    private List<Animal> newComers = new ArrayList<>();
+    private final List<Animal> newComers = new ArrayList<>();
     private List<Plant> plants = new ArrayList<>();
 
     public Cell(int x, int y) {
@@ -46,10 +46,6 @@ public class Cell {
 
     public List<Animal> getNewComers() {
         return newComers;
-    }
-
-    public void setNewComers(List<Animal> newComers) {
-        this.newComers = newComers;
     }
 
     public List<Plant> getPlants() {

@@ -1,21 +1,19 @@
-package ru.fortushin.islandsimulation.action;
+package ru.fortushin.islandsimulation.utils;
 
 import ru.fortushin.islandsimulation.models.Animal;
 import ru.fortushin.islandsimulation.models.Cell;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
 
-public class Move  {
+public class Mover {
     private static int currentX;
     private static int currentY;
     private static Random r = new Random();
     private static Cell[][] cells;
     public static void setCurrentCoordinates(int x, int y, Cell[][] cells){
-        Move.currentX = x;
-        Move.currentY = y;
-        Move.cells = cells;
+        Mover.currentX = x;
+        Mover.currentY = y;
+        Mover.cells = cells;
     }
     public static void replaceAnimalToAnotherCell(Animal animal){
         switch (r.nextInt(4)){

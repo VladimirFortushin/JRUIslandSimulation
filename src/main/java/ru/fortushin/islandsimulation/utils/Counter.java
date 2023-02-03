@@ -1,4 +1,4 @@
-package ru.fortushin.islandsimulation.action;
+package ru.fortushin.islandsimulation.utils;
 
 import ru.fortushin.islandsimulation.models.Animal;
 

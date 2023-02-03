@@ -1,7 +1,7 @@
 package ru.fortushin.islandsimulation.models;
 
 import ru.fortushin.islandsimulation.action.Action;
-import ru.fortushin.islandsimulation.action.Move;
+import ru.fortushin.islandsimulation.utils.Mover;
 
 import java.util.Scanner;
 
@@ -44,7 +44,7 @@ public class Island {
 
         for (int i = 0; i < x; i++) {
             for (int j = 0; j < y; j++) {
-                Move.setCurrentCoordinates(i, j, island);
+                Mover.setCurrentCoordinates(i, j, island);
                 System.out.println(action.doTurnAndReturnData(island[i][j]));
             }
         }
